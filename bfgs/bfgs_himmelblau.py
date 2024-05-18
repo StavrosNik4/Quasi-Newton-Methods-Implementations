@@ -101,18 +101,18 @@ def callback(xk):
 # Initial guess
 x0 = np.array([4.0, 4.0])
 
-# Custom BFGS
+# BFGS
 optimal_solution, steps, x_values_custom, f_values_custom = bfgs(objective_function, gradient, x0)
-print("Optimal solution:", optimal_solution)
-print("Objective function value at optimal solution:", objective_function(optimal_solution))
-print("Number of steps taken:", steps)
+print("Βέλτιστο:", optimal_solution)
+print("Τιμή αντικειμενικής συνάρτησης στο βέλτιστο:", objective_function(optimal_solution))
+print("Επαναλήψεις που χρειάστηκαν:", steps)
 print()
 
-# SciPy BFGS
-result = minimize(objective_function, x0, method='BFGS', jac=gradient, callback=callback)
-print("Optimal solution (scipy):", result.x)
-print("Objective function value at optimal solution (scipy):", result.fun)
-print("Number of steps taken (scipy):", scipy_steps)
+# # SciPy BFGS
+# result = minimize(objective_function, x0, method='BFGS', jac=gradient, callback=callback)
+# print("Optimal solution (scipy):", result.x)
+# print("Objective function value at optimal solution (scipy):", result.fun)
+# print("Number of steps taken (scipy):", scipy_steps)
 
 # Plotting
 x_values_custom = np.array(x_values_custom)

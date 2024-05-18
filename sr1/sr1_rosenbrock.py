@@ -16,7 +16,7 @@ def gradient(x):
     return grad
 
 
-def sr1(f, grad, x0, max_iter=100, tol=1e-6, epsilon=1e-8):
+def sr1(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
     x_k = x0
     n = len(x0)
     B_k = np.eye(n)  # Initial Hessian approximation

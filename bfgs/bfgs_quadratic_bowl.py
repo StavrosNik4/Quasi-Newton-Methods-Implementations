@@ -4,7 +4,7 @@ from scipy.optimize.linesearch import line_search_wolfe2
 
 
 def objective_function(x):
-    # sphere
+    # Quadratic Bowl
     return x[0] ** 2 + x[1] ** 2
 
 
@@ -16,6 +16,7 @@ def gradient(x):
 
 
 def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
+    # Initialization
     x_k = x0
     n = len(x0)
     B_k = np.eye(n)  # Initial Hessian approximation
@@ -23,12 +24,14 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
     x_values = [x_k.copy()]
     f_values = [f(x_k)]
     print(f"Step {steps}: x = {x_k}, f(x) = {f(x_k)}")
+    # Main Step
     for i in range(max_iter):
         grad_k = grad(x_k)
         # Stopping criterion
         if np.linalg.norm(grad_k) < tol:
             break
-        # p_k = -np.dot(B_k, grad_k)  # Search direction
+
+        # Search direction calculation
         p_k = -np.linalg.inv(B_k) @ grad_k
 
         # Line search method to find step size α
@@ -87,12 +90,13 @@ def callback(xk):
 # Initial guess
 x0 = np.array([1.0, 1.0])
 
-# Custom BFGS
+# BFGS
 optimal_solution, steps, x_values_custom, f_values_custom = bfgs(objective_function, gradient, x0)
-print("Optimal solution:", optimal_solution)
-print("Objective function value at optimal solution:", objective_function(optimal_solution))
-print("Number of steps taken:", steps)
+print("Βέλτιστο:", optimal_solution)
+print("Τιμή αντικειμενικής συνάρτησης στο βέλτιστο:", objective_function(optimal_solution))
+print("Επαναλήψεις που χρειάστηκαν:", steps)
 print()
+
 
 # # SciPy BFGS
 # result = minimize(objective_function, x0, method='BFGS', jac=gradient, callback=callback)
@@ -120,7 +124,7 @@ ax.scatter(x0[0], x0[1], objective_function(x0), color='blue', s=100, label='Α�
 ax.set_xlabel('x0')
 ax.set_ylabel('x1')
 ax.set_zlabel('f(x)')
-ax.set_title('Επιφάνεια Αντικειμενικής Συνάρτησης Σφαίρας \n και Διαδρομή Βελτιστοποίησης')
+ax.set_title('Επιφάνεια Αντικειμενικής Συνάρτησης Quadratic Bowl\n και Διαδρομή Βελτιστοποίησης')
 ax.legend()
 
 # Contour plot
@@ -130,7 +134,7 @@ ax2.plot(x_values_custom[:, 0], x_values_custom[:, 1], 'r-o')
 ax2.scatter(x0[0], x0[1], color='blue', s=100, label='Αρχικό Σημείο')
 ax2.set_xlabel('x0')
 ax2.set_ylabel('x1')
-ax2.set_title('Contour Αντικειμενικής Συνάρτησης Σφαίρας \n και Διαδρομή Βελτιστοποίησης')
+ax2.set_title('Contour Αντικειμενικής Συνάρτησης Quadratic Bowl\n και Διαδρομή Βελτιστοποίησης')
 ax2.legend()
 
 plt.show()

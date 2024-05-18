@@ -31,8 +31,6 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
         if np.linalg.norm(grad_k) < tol:
             print()
             break
-        # p_k = -np.dot(B_k, grad_k)  # Search direction
-        # p_k = -np.linalg.inv(B_k) @ grad_k
 
         # Perform Cholesky decomposition of B_k
         try:
@@ -49,7 +47,6 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
 
         # Update x_k
         x_k1 = x_k + alpha_k * p_k
-        # print(x_k1)
 
         # Compute s_k and y_k
         s_k = x_k1 - x_k
@@ -99,18 +96,18 @@ def callback(xk):
 # Initial guess
 x0 = np.array([0.0, -2.0])
 
-# Custom BFGS
+# BFGS
 optimal_solution, steps, x_values_custom, f_values_custom = bfgs(objective_function, gradient, x0)
-print("Optimal solution:", optimal_solution)
-print("Objective function value at optimal solution:", objective_function(optimal_solution))
-print("Number of steps taken:", steps)
+print("Βέλτιστο:", optimal_solution)
+print("Τιμή αντικειμενικής συνάρτησης στο βέλτιστο:", objective_function(optimal_solution))
+print("Επαναλήψεις που χρειάστηκαν:", steps)
 print()
 
-# SciPy BFGS
-result = minimize(objective_function, x0, method='BFGS', jac=gradient, callback=callback)
-print("Optimal solution (scipy):", result.x)
-print("Objective function value at optimal solution (scipy):", result.fun)
-print("Number of steps taken (scipy):", scipy_steps)
+# # SciPy BFGS
+# result = minimize(objective_function, x0, method='BFGS', jac=gradient, callback=callback)
+# print("Optimal solution (scipy):", result.x)
+# print("Objective function value at optimal solution (scipy):", result.fun)
+# print("Number of steps taken (scipy):", scipy_steps)
 
 # Create a grid of points
 x = np.linspace(-5, 5, 400)
@@ -129,11 +126,11 @@ plt.plot(x0[0], x0[1], 'ko', markersize=10, label='Αρχικό σημείο x_0
 
 # Custom BFGS Path
 x_values_custom = np.array(x_values_custom)
-plt.plot(x_values_custom[:, 0], x_values_custom[:, 1], 'r-o', label='Custom BFGS')
+plt.plot(x_values_custom[:, 0], x_values_custom[:, 1], 'r-o', label='BFGS')
 
-# # SciPy BFGS Path
-x_values_scipy = np.array(x_values_scipy)
-plt.plot(x_values_scipy[:, 0], x_values_scipy[:, 1], 'b-o', label='SciPy BFGS')
+# # # SciPy BFGS Path
+# x_values_scipy = np.array(x_values_scipy)
+# plt.plot(x_values_scipy[:, 0], x_values_scipy[:, 1], 'b-o', label='SciPy BFGS')
 
 plt.title('Μονοπάτι Βελτιστοποίησης και Contour της Αντικειμενικής Συνάρτησης Έλλειψης')
 plt.xlabel('x[0]')

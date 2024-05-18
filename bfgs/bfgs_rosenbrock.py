@@ -28,8 +28,6 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
         # Stopping criterion
         if np.linalg.norm(grad_k) < tol:
             break
-        # p_k = -np.dot(B_k, grad_k)  # Search direction
-        # p_k = -np.linalg.inv(B_k) @ grad_k
 
         # Perform Cholesky decomposition of B_k
         try:
@@ -84,11 +82,12 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
 # Initial guess
 x0 = np.array([4.0, 4.0])
 
-# Custom BFGS
+# BFGS
 optimal_solution, steps, x_values_custom, f_values_custom = bfgs(objective_function, gradient, x0)
-print("Optimal solution:", optimal_solution)
-print("Objective function value at optimal solution:", objective_function(optimal_solution))
-print("Number of steps taken:", steps)
+print("Βέλτιστο:", optimal_solution)
+print("Τιμή αντικειμενικής συνάρτησης στο βέλτιστο:", objective_function(optimal_solution))
+print("Επαναλήψεις που χρειάστηκαν:", steps)
+print()
 
 # Plotting
 
