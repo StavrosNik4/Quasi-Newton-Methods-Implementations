@@ -55,12 +55,6 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
         s_k = x_k1 - x_k
         y_k = grad(x_k1) - grad_k
 
-        # # Avoid division by zero and numerical instability
-        # if np.dot(s_k, y_k) > 1e-10:
-        #     rho_k = 1.0 / np.dot(y_k, s_k)
-        #     V_k = np.eye(n) - rho_k * np.outer(s_k, y_k)
-        #     B_k = V_k.T @ B_k @ V_k + rho_k * np.outer(s_k, s_k)
-
         s_k = s_k.reshape(-1, 1)
         y_k = y_k.reshape(-1, 1)
 
