@@ -16,7 +16,6 @@ def gradient(x):
 
 
 def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
-    # Initialization
     x_k = x0
     n = len(x0)
     B_k = np.eye(n)  # Initial Hessian approximation
@@ -24,15 +23,32 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
     x_values = [x_k.copy()]
     f_values = [f(x_k)]
     print(f"Step {steps}: x = {x_k}, f(x) = {f(x_k)}")
-    # Main Step
     for i in range(max_iter):
         grad_k = grad(x_k)
         # Stopping criterion
         if np.linalg.norm(grad_k) < tol:
+            print()
             break
 
-        # Search direction calculation
-        p_k = -np.linalg.inv(B_k) @ grad_k
+        # Perform Cholesky decomposition of B_k
+        try:
+
+            # Perform Cholesky decomposition
+            L = np.linalg.cholesky(B_k)
+
+            # Define L transpose
+            L_T = L.T
+
+            # Solve Ly = -gradient using forward substitution
+            y = np.linalg.solve(L, -grad_k)
+
+            # Solve L_T * p = y using backward substitution
+            p_k = np.linalg.solve(L_T, y)
+
+
+        except np.linalg.LinAlgError:
+            print("Cholesky decomposition failed. Using gradient descent direction.")
+            p_k = -grad_k
 
         # Line search method to find step size α
         alpha_k = line_search_wolfe2(f, grad, x_k, p_k)[0]
@@ -97,12 +113,6 @@ print("Τιμή αντικειμενικής συνάρτησης στο βέλ�
 print("Επαναλήψεις που χρειάστηκαν:", steps)
 print()
 
-
-# # SciPy BFGS
-# result = minimize(objective_function, x0, method='BFGS', jac=gradient, callback=callback)
-# print("Optimal solution (scipy):", result.x)
-# print("Objective function value at optimal solution (scipy):", result.fun)
-# print("Number of steps taken (scipy):", scipy_steps)
 
 # Plotting
 x_values_custom = np.array(x_values_custom)

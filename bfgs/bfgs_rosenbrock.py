@@ -1,8 +1,7 @@
-import numpy as np
-# from scipy.optimize import line_search
-from scipy.optimize.linesearch import line_search_wolfe2
 import matplotlib.pyplot as plt
-from scipy.linalg import cho_factor, cho_solve
+import numpy as np
+from scipy.optimize.linesearch import line_search_wolfe2
+
 
 def objective_function(x):
     return 100 * (x[1] - x[0] ** 2) ** 2 + (x[0] - 1) ** 2
@@ -27,13 +26,27 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
         grad_k = grad(x_k)
         # Stopping criterion
         if np.linalg.norm(grad_k) < tol:
+            print()
             break
 
         # Perform Cholesky decomposition of B_k
         try:
-            L, lower = cho_factor(B_k)
-            p_k = cho_solve((L, lower), -grad_k)
-            # print(p_k)
+            # L, lower = cho_factor(B_k)
+            # p_k = cho_solve((L, lower), -grad_k)
+
+            # Perform Cholesky decomposition
+            L = np.linalg.cholesky(B_k)
+
+            # Define L transpose
+            L_T = L.T
+
+            # Solve Ly = -gradient using forward substitution
+            y = np.linalg.solve(L, -grad_k)
+
+            # Solve L_T * p = y using backward substitution
+            p_k = np.linalg.solve(L_T, y)
+
+
         except np.linalg.LinAlgError:
             print("Cholesky decomposition failed. Using gradient descent direction.")
             p_k = -grad_k
@@ -67,7 +80,6 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
         term2 = (y_k @ y_k.T) / ykT_sk
 
         B_k = B_k - term1 + term2
-
 
         # Update x_k for the next iteration
         x_k = x_k1

@@ -1,8 +1,6 @@
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import minimize
+import numpy as np
 from scipy.optimize.linesearch import line_search_wolfe2
-from scipy.linalg import cho_factor, cho_solve
 
 
 def objective_function(x):
@@ -30,15 +28,25 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
         grad_k = grad(x_k)
         # Stopping criterion
         if np.linalg.norm(grad_k) < tol:
+            print()
             break
-        # p_k = -np.dot(B_k, grad_k)  # Search direction
-        # p_k = -np.linalg.inv(B_k) @ grad_k
 
         # Perform Cholesky decomposition of B_k
         try:
-            L, lower = cho_factor(B_k)
-            p_k = cho_solve((L, lower), -grad_k)
-            # print(p_k)
+
+            # Perform Cholesky decomposition
+            L = np.linalg.cholesky(B_k)
+
+            # Define L transpose
+            L_T = L.T
+
+            # Solve Ly = -gradient using forward substitution
+            y = np.linalg.solve(L, -grad_k)
+
+            # Solve L_T * p = y using backward substitution
+            p_k = np.linalg.solve(L_T, y)
+
+
         except np.linalg.LinAlgError:
             print("Cholesky decomposition failed. Using gradient descent direction.")
             p_k = -grad_k
@@ -73,7 +81,6 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
 
         B_k = B_k - term1 + term2
 
-
         # Update x_k for the next iteration
         x_k = x_k1
 
@@ -99,7 +106,7 @@ def callback(xk):
 
 
 # Initial guess
-x0 = np.array([4.0, 4.0])
+x0 = np.array([1.0, 4.0])
 
 # BFGS
 optimal_solution, steps, x_values_custom, f_values_custom = bfgs(objective_function, gradient, x0)
@@ -107,12 +114,6 @@ print("Βέλτιστο:", optimal_solution)
 print("Τιμή αντικειμενικής συνάρτησης στο βέλτιστο:", objective_function(optimal_solution))
 print("Επαναλήψεις που χρειάστηκαν:", steps)
 print()
-
-# # SciPy BFGS
-# result = minimize(objective_function, x0, method='BFGS', jac=gradient, callback=callback)
-# print("Optimal solution (scipy):", result.x)
-# print("Objective function value at optimal solution (scipy):", result.fun)
-# print("Number of steps taken (scipy):", scipy_steps)
 
 # Plotting
 x_values_custom = np.array(x_values_custom)

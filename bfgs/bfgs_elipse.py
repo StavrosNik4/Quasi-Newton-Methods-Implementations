@@ -1,9 +1,7 @@
-import numpy as np
 import matplotlib.pyplot as plt
-from scipy.optimize import minimize
+import numpy as np
 # from scipy.optimize import line_search
 from scipy.optimize.linesearch import line_search_wolfe2
-from scipy.linalg import cho_factor, cho_solve
 
 
 def objective_function(x):
@@ -34,8 +32,20 @@ def bfgs(f, grad, x0, max_iter=100, tol=1e-5, epsilon=1e-8):
 
         # Perform Cholesky decomposition of B_k
         try:
-            L, lower = cho_factor(B_k)
-            p_k = cho_solve((L, lower), -grad_k)
+
+            # Perform Cholesky decomposition
+            L = np.linalg.cholesky(B_k)
+
+            # Define L transpose
+            L_T = L.T
+
+            # Solve Ly = -gradient using forward substitution
+            y = np.linalg.solve(L, -grad_k)
+
+            # Solve L_T * p = y using backward substitution
+            p_k = np.linalg.solve(L_T, y)
+
+
         except np.linalg.LinAlgError:
             print("Cholesky decomposition failed. Using gradient descent direction.")
             p_k = -grad_k
@@ -103,12 +113,6 @@ print("Τιμή αντικειμενικής συνάρτησης στο βέλ�
 print("Επαναλήψεις που χρειάστηκαν:", steps)
 print()
 
-# # SciPy BFGS
-# result = minimize(objective_function, x0, method='BFGS', jac=gradient, callback=callback)
-# print("Optimal solution (scipy):", result.x)
-# print("Objective function value at optimal solution (scipy):", result.fun)
-# print("Number of steps taken (scipy):", scipy_steps)
-
 # Create a grid of points
 x = np.linspace(-5, 5, 400)
 y = np.linspace(-5, 5, 400)
@@ -128,9 +132,6 @@ plt.plot(x0[0], x0[1], 'ko', markersize=10, label='Αρχικό σημείο x_0
 x_values_custom = np.array(x_values_custom)
 plt.plot(x_values_custom[:, 0], x_values_custom[:, 1], 'r-o', label='BFGS')
 
-# # # SciPy BFGS Path
-# x_values_scipy = np.array(x_values_scipy)
-# plt.plot(x_values_scipy[:, 0], x_values_scipy[:, 1], 'b-o', label='SciPy BFGS')
 
 plt.title('Μονοπάτι Βελτιστοποίησης και Contour της Αντικειμενικής Συνάρτησης Έλλειψης')
 plt.xlabel('x[0]')
